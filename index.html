@@ -1,0 +1,651 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>William Su | Communications, Navigation & Control Engineering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0a0e27;
+            --secondary-bg: #1a1f3a;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-10px) translateX(-10px); }
+            75% { transform: translateY(-30px) translateX(5px); }
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 20px 40px rgba(6, 182, 212, 0.2);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-bar.scrolled {
+            background: rgba(10, 14, 39, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-cyan);
+            background: var(--glass-bg);
+        }
+
+        .nav-link.active {
+            color: var(--accent-cyan);
+        }
+
+        .lang-toggle {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .lang-toggle:hover {
+            border-color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.1);
+            transform: scale(1.05);
+        }
+
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+        }
+
+        .hero-roles {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.6s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-purple), var(--accent-cyan));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            border: 3px solid var(--primary-bg);
+        }
+
+        .skill-category {
+            margin-bottom: 2rem;
+        }
+
+        .skill-item {
+            display: inline-block;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--accent-purple);
+            transform: translateY(-3px);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            text-align: center;
+            padding: 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-primary);
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                background: rgba(10, 14, 39, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                transition: left 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .timeline {
+                padding-left: 1rem;
+            }
+
+            .timeline-item {
+                padding-left: 1.5rem;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="animated-bg" id="animatedBg"></div>
+
+    <nav class="nav-bar" id="navbar">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 1.5rem; font-weight: 700;" class="gradient-text">WS</div>
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="nav-links" id="navLinks" style="display: flex; gap: 1rem; align-items: center;">
+                <a href="#home" class="nav-link" data-en="Home" data-cn="首页">Home</a>
+                <a href="#about" class="nav-link" data-en="About" data-cn="關於">About</a>
+                <a href="#education" class="nav-link" data-en="Education" data-cn="教育">Education</a>
+                <a href="#experience" class="nav-link" data-en="Experience" data-cn="經歷">Experience</a>
+                <a href="#skills" class="nav-link" data-en="Skills" data-cn="技能">Skills</a>
+                <a href="#contact" class="nav-link" data-en="Contact" data-cn="聯繫">Contact</a>
+                <button class="lang-toggle" id="langToggle">EN / 中文</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section" id="home">
+        <div>
+            <h1 class="hero-title" data-en="WILLIAM SU" data-cn="蘇威廉">WILLIAM SU</h1>
+            <p class="hero-subtitle" data-en="Communications, Navigation & Control Engineering" data-cn="通訊、導航與控制工程">Communications, Navigation & Control Engineering</p>
+            <p class="hero-roles gradient-text" data-en="Innovator • Developer • Researcher" data-cn="創新者 • 開發者 • 研究員">Innovator • Developer • Researcher</p>
+        </div>
+    </section>
+
+    <section class="section" id="about">
+        <h2 class="section-title gradient-text" data-en="About Me" data-cn="關於我">About Me</h2>
+        <div class="glass-card">
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary);" data-en="I'm a senior student at National Taiwan Ocean University, specializing in Communications, Navigation and Control Engineering. With a passion for AI, UAV technology, and software development, I combine technical expertise with international experience to solve complex engineering challenges. My journey spans from hands-on research in drone systems to enterprise IT solutions, always driven by curiosity and innovation." data-cn="我是國立台灣海洋大學通訊、導航與控制工程系的大四學生。我熱衷於人工智慧、無人機技術和軟體開發,結合技術專長和國際經驗來解決複雜的工程挑戰。我的經歷涵蓋從無人機系統的實踐研究到企業IT解決方案,始終由好奇心和創新精神驅動。">I'm a senior student at National Taiwan Ocean University, specializing in Communications, Navigation and Control Engineering. With a passion for AI, UAV technology, and software development, I combine technical expertise with international experience to solve complex engineering challenges. My journey spans from hands-on research in drone systems to enterprise IT solutions, always driven by curiosity and innovation.</p>
+        </div>
+    </section>
+
+    <section class="section" id="education">
+        <h2 class="section-title gradient-text" data-en="Education" data-cn="教育">Education</h2>
+        <div class="glass-card">
+            <h3 style="font-size: 1.8rem; font-weight: 600; margin-bottom: 0.5rem;" data-en="National Taiwan Ocean University" data-cn="國立台灣海洋大學">National Taiwan Ocean University</h3>
+            <p style="font-size: 1.2rem; color: var(--accent-cyan); margin-bottom: 0.5rem;" data-en="Department of Communications, Navigation and Control Engineering" data-cn="通訊、導航與控制工程系">Department of Communications, Navigation and Control Engineering</p>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" data-en="Senior Student" data-cn="大四學生">Senior Student</p>
+            
+            <h4 style="font-size: 1.2rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem;" data-en="Relevant Coursework:" data-cn="相關課程:">Relevant Coursework:</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <span class="skill-item">Computer Organization</span>
+                <span class="skill-item">Introduction to Computer Science</span>
+                <span class="skill-item">Programming Basics</span>
+                <span class="skill-item">Electronic Circuit Laboratory</span>
+                <span class="skill-item">Navigation System Laboratory</span>
+                <span class="skill-item">Introduction to Artificial Intelligence</span>
+                <span class="skill-item">Digital Logic Design</span>
+                <span class="skill-item">Deep Learning</span>
+                <span class="skill-item">Signals and Systems</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="experience">
+        <h2 class="section-title gradient-text" data-en="Professional Experience" data-cn="專業經歷">Professional Experience</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="glass-card">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;" data-en="Ennoconn Technologies, Ennoconn Corp." data-cn="英諾康科技股份有限公司">Ennoconn Technologies, Ennoconn Corp.</h3>
+                    <p style="color: var(--accent-purple); font-weight: 600; margin-bottom: 0.3rem;" data-en="MIS Intern" data-cn="MIS實習生">MIS Intern</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.3rem;">Jul 2025 – Oct 2025</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;" data-en="New Taipei City, Taiwan" data-cn="台灣新北市">New Taipei City, Taiwan</p>
+                    <ul style="color: var(--text-secondary); padding-left: 1.5rem;">
+                        <li data-en="Provided technical support for hardware, software, and network-related issues" data-cn="為硬體、軟體和網路相關問題提供技術支援">Provided technical support for hardware, software, and network-related issues</li>
+                        <li data-en="Assisted global subsidiaries in IT troubleshooting" data-cn="協助全球子公司進行IT故障排除">Assisted global subsidiaries in IT troubleshooting</li>
+                        <li data-en="Implemented and tested AI agent workflows for process optimization" data-cn="實施和測試AI代理工作流程以優化流程">Implemented and tested AI agent workflows for process optimization</li>
+                        <li data-en="Utilized Google Cloud Platform (GCP) for infrastructure monitoring" data-cn="利用Google雲平台(GCP)進行基礎設施監控">Utilized Google Cloud Platform (GCP) for infrastructure monitoring</li>
+                        <li data-en="Collaborated on system updates, data backup, and cybersecurity compliance" data-cn="協作進行系統更新、資料備份和網路安全合規">Collaborated on system updates, data backup, and cybersecurity compliance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="glass-card">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;" data-en="National Taiwan Ocean University" data-cn="國立台灣海洋大學">National Taiwan Ocean University</h3>
+                    <p style="color: var(--accent-purple); font-weight: 600; margin-bottom: 0.3rem;" data-en="Undergraduate Research Project Lead" data-cn="本科研究項目負責人">Undergraduate Research Project Lead</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.3rem;" data-en="Feb 2025 – Present" data-cn="2025年2月 – 至今">Feb 2025 – Present</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;" data-en="Keelung, Taiwan" data-cn="台灣基隆">Keelung, Taiwan</p>
+                    <p style="color: var(--accent-cyan); font-style: italic; margin-bottom: 1rem;" data-en="UAV Wind Field Measurement and Route Planning (Ongoing)" data-cn="無人機風場測量與路徑規劃(進行中)">UAV Wind Field Measurement and Route Planning (Ongoing)</p>
+                    <ul style="color: var(--text-secondary); padding-left: 1.5rem;">
+                        <li data-en="Designed and assembled quadrotor UAV with GPS, Raspberry Pi, and anemometer" data-cn="設計和組裝配備GPS、樹莓派和風速計的四旋翼無人機">Designed and assembled quadrotor UAV with GPS, Raspberry Pi, and anemometer</li>
+                        <li data-en="Implemented UAV flight control using ArduPilot platform" data-cn="使用ArduPilot平台實現無人機飛行控制">Implemented UAV flight control using ArduPilot platform</li>
+                        <li data-en="Simulated wind field environments using OpenFOAM" data-cn="使用OpenFOAM模擬風場環境">Simulated wind field environments using OpenFOAM</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="glass-card">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;" data-en="English Tutor" data-cn="英語家教">English Tutor</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;" data-en="Sep 2024 – Jan 2025" data-cn="2024年9月 – 2025年1月">Sep 2024 – Jan 2025</p>
+                    <ul style="color: var(--text-secondary); padding-left: 1.5rem;">
+                        <li data-en="Guided students in English reading comprehension" data-cn="指導學生英語閱讀理解">Guided students in English reading comprehension</li>
+                        <li data-en="Expanded vocabulary through original English novels" data-cn="通過原版英語小說擴展詞彙量">Expanded vocabulary through original English novels</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="glass-card">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;" data-en="Gangwon International Educational Institute Discussion Program" data-cn="江原國際教育學院討論計劃">Gangwon International Educational Institute Discussion Program</h3>
+                    <p style="color: var(--accent-purple); font-weight: 600; margin-bottom: 0.3rem;" data-en="Student Representative" data-cn="學生代表">Student Representative</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.3rem;" data-en="Apr 2022 – Jun 2022" data-cn="2022年4月 – 6月">Apr 2022 – Jun 2022</p>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;" data-en="Korea" data-cn="韓國">Korea</p>
+                    <ul style="color: var(--text-secondary); padding-left: 1.5rem;">
+                        <li data-en="Conducted international exchange in English with Korea, Japan, and New Zealand on 'Artificial Intelligence'" data-cn="與韓國、日本和紐西蘭進行關於'人工智慧'的英語國際交流">Conducted international exchange in English with Korea, Japan, and New Zealand on 'Artificial Intelligence'</li>
+                        <li data-en="Researched AI applications in Taiwan's medical and energy sectors" data-cn="研究AI在台灣醫療和能源領域的應用">Researched AI applications in Taiwan's medical and energy sectors</li>
+                        <li data-en="Enhanced data analysis and problem-solving skills" data-cn="提升資料分析和問題解決能力">Enhanced data analysis and problem-solving skills</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="skills">
+        <h2 class="section-title gradient-text" data-en="Skills & Expertise" data-cn="技能與專長">Skills & Expertise</h2>
+        
+        <div class="skill-category">
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-cyan);" data-en="Languages" data-cn="語言能力">Languages</h3>
+            <div>
+                <span class="skill-item" data-en="Mandarin (Native)" data-cn="中文(母語)">Mandarin (Native)</span>
+                <span class="skill-item" data-en="English (Fluent)" data-cn="英語(流利)">English (Fluent)</span>
+            </div>
+        </div>
+
+        <div class="skill-category">
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-purple);" data-en="Programming" data-cn="編程技能">Programming</h3>
+            <div>
+                <span class="skill-item" data-en="Python (Basic)" data-cn="Python(基礎)">Python (Basic)</span>
+                <span class="skill-item" data-en="C++ (Basic)" data-cn="C++(基礎)">C++ (Basic)</span>
+                <span class="skill-item" data-en="Kotlin - Android Studio (Basic)" data-cn="Kotlin - Android Studio(基礎)">Kotlin - Android Studio (Basic)</span>
+            </div>
+        </div>
+
+        <div class="skill-category">
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-blue);" data-en="Soft Skills" data-cn="軟技能">Soft Skills</h3>
+            <div>
+                <span class="skill-item" data-en="Logical & Design Thinking" data-cn="邏輯與設計思維">Logical & Design Thinking</span>
+                <span class="skill-item" data-en="Communication" data-cn="溝通能力">Communication</span>
+                <span class="skill-item" data-en="Problem Solving" data-cn="問題解決">Problem Solving</span>
+                <span class="skill-item" data-en="Collaborative Teamwork" data-cn="團隊協作">Collaborative Teamwork</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="contact">
+        <h2 class="section-title gradient-text" data-en="Get In Touch" data-cn="聯繫方式">Get In Touch</h2>
+        <p style="text-align: center; color: var(--text-secondary); font-size: 1.2rem; margin-bottom: 3rem;" data-en="Let's connect and collaborate" data-cn="讓我們聯繫與合作">Let's connect and collaborate</p>
+        
+        <div class="contact-grid">
+            <div class="contact-item">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📞</div>
+                <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;" data-en="Phone" data-cn="電話">Phone</h3>
+                <p style="color: var(--text-secondary);">0965505385</p>
+            </div>
+            
+            <div class="contact-item">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📧</div>
+                <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;" data-en="Email" data-cn="郵箱">Email</h3>
+                <p style="color: var(--text-secondary); word-break: break-all;">11157037@mail.ntou.edu.tw</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="mailto:11157037@mail.ntou.edu.tw" class="btn-primary" data-en="Send Message" data-cn="發送消息">Send Message</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p data-en="© 2025 William Su. All rights reserved." data-cn="© 2025 蘇威廉。保留所有權利。">© 2025 William Su. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let currentLang = `en`;
+
+        function createParticles() {
+            const bg = document.getElementById(`animatedBg`);
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement(`div`);
+                particle.className = `particle`;
+                
+                const size = Math.random() * 4 + 2;
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const duration = Math.random() * 10 + 10;
+                const delay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+                particle.style.background = `rgba(139, 92, 246, ${Math.random() * 0.5 + 0.2})`;
+                particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+                
+                bg.appendChild(particle);
+            }
+        }
+
+        function updateLanguage() {
+            const elements = document.querySelectorAll(`[data-en][data-cn]`);
+            elements.forEach(el => {
+                if (currentLang === `en`) {
+                    el.textContent = el.getAttribute(`data-en`);
+                } else {
+                    el.textContent = el.getAttribute(`data-cn`);
+                }
+            });
+        }
+
+        document.getElementById(`langToggle`).addEventListener(`click`, () => {
+            currentLang = currentLang === `en` ? `cn` : `en`;
+            updateLanguage();
+        });
+
+        const navLinks = document.querySelectorAll(`.nav-link`);
+        navLinks.forEach(link => {
+            link.addEventListener(`click`, (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute(`href`).substring(1);
+                const targetSection = document.getElementById(targetId);
+                
+                targetSection.scrollIntoView({
+                    behavior: `smooth`,
+                    block: `start`
+                });
+
+                navLinks.forEach(l => l.classList.remove(`active`));
+                link.classList.add(`active`);
+
+                if (window.innerWidth <= 768) {
+                    document.getElementById(`navLinks`).classList.remove(`active`);
+                }
+            });
+        });
+
+        const hamburger = document.getElementById(`hamburger`);
+        const navLinksContainer = document.getElementById(`navLinks`);
+        
+        hamburger.addEventListener(`click`, () => {
+            navLinksContainer.classList.toggle(`active`);
+        });
+
+        window.addEventListener(`scroll`, () => {
+            const navbar = document.getElementById(`navbar`);
+            if (window.scrollY > 50) {
+                navbar.classList.add(`scrolled`);
+            } else {
+                navbar.classList.remove(`scrolled`);
+            }
+
+            const sections = document.querySelectorAll(`.section`);
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.75) {
+                    section.classList.add(`visible`);
+                }
+            });
+        });
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: `0px 0px -100px 0px`
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add(`visible`);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll(`.section`).forEach(section => {
+            observer.observe(section);
+        });
+
+        createParticles();
+        updateLanguage();
+
+        document.querySelectorAll(`a[href^="#"]`).forEach(anchor => {
+            anchor.addEventListener(`click`, function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute(`href`));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: `smooth`,
+                        block: `start`
+                    });
+                }
+            });
+        });
+    </script>
+
+</body></html>
